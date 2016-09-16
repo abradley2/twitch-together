@@ -5,7 +5,10 @@ export const creators = {
 	[LOGIN]: function () {
 		return {
 			type: LOGIN,
-			request: '/api/twitch/getauth'
+			request: {
+				method: 'GET',
+				url: '/api/twitch/getauth'
+			}
 		}
 	},
 	[LOGOUT]: function () {

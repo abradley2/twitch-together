@@ -17,7 +17,6 @@ var baseOpts = {
 	}
 }
 
-
 // Permissions layer
 twitch.use(function* (next) {
 	var ctx = this
@@ -36,8 +35,8 @@ twitch.get('/getauth', function * () {
 			'&client_id=' + config.twitchClientId +
 			'&redirect_uri=' + config.twitchAuthRedirectUri +
 			'&scope=' + [
-				'user_read', 
-				'user_blocks_read', 
+				'user_read',
+				'user_blocks_read',
 				'user_follows_edit',
 				'user_subscriptions',
 				'channel_subscriptions',

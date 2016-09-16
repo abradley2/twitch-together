@@ -16,9 +16,10 @@ export default class Auth extends View {
 		super(props)
 		this.actions = bindActionCreators(creators, store.dispatch)
 
-		console.log(store.getState().CurrentUser)
-
-		if (!store.getState().CurrentUser.get('loginRequest').hasFetched) {
+		if (
+			!store.getState().CurrentUser
+			|| !store.getState().CurrentUser.get('hasFetched')
+		) {
 			this.actions[LOGIN]()
 		}
 	}

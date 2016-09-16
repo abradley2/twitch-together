@@ -1,4 +1,6 @@
-import * as Promise from 'bluebird'
+import Promise from 'bluebird'
+
+console.log(Promise)
 
 export function prop(initialVal) {
 	var _val = initialVal
@@ -15,13 +17,6 @@ export function request(opts) {
 	return new Promise(function (resolve, reject) {
 		var xhr = new XMLHttpRequest()
 
-		if (typeof opts === 'string') {
-			opts = {
-				method: 'GET',
-				url: opts
-			}
-		}
-
 		xhr.open(opts.method, opts.url, true)
 
 		if (opts.headers) {
@@ -33,14 +28,12 @@ export function request(opts) {
 		}
 
 		xhr.onreadystatechange = function () {
-			if (
-				xhr.readyState === XMLHttpRequest.DONE
-				&& xhr.status >= 200
-				&& xhr.status < 400
-			) {
-				resolve(xhr.response)
-			} else {
-				reject(xhr.response)
+			if (xhr.readyState === xhr.readyState === XMLHttpRequest.DONE) {
+				if (xhr.status >= 200 && xhr.status < 400) {
+					resolve(xhr.response)
+				} else {
+					reject(xhr.response)
+				}
 			}
 		}
 
@@ -82,4 +75,15 @@ export function assign(target) {
 		}
 	}
 	return output;
+}
+
+export function clone (obj) {
+	return (obj === null || typeof obj !== 'object') ? obj
+		: Array.isArray(obj) ? Array.prototype.map.call(obj, clone)
+			: (typeof obj === 'object' ) ? (() => {
+				var retVal = {}
+				Object.keys(obj).forEach((key) => retVal[key] = obj[key])
+				return retVal
+			})()
+				: obj
 }

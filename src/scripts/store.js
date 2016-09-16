@@ -11,14 +11,14 @@ function createAsyncDispatch (store, action) {
 	request(action.request)
 		.then(res => {
 			store.dispatch(assign(action, {
-				status: 'completed',
+				status: 'done',
 				response: res
 			}))
 		})
 		.catch(e => {
 			store.dispatch(assign(action, {
-				status: 'error',
-				response: e
+				status: 'done',
+				error: e
 			}))
 		})
 }
@@ -26,7 +26,8 @@ function createAsyncDispatch (store, action) {
 function handleAsync (store) {
 	return function (next) {
 		return function (action) {
-			if (action.request && (typeof action.request.status === 'undefined')) {
+			if (action.request && action.status !== 'done'
+			) {
 				createAsyncDispatch(store, clone(action))
 			}
 			assign(action, {status: 'pending'})
