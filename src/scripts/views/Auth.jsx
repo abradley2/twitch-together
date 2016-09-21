@@ -4,7 +4,7 @@ import View from '../utils/View'
 import {bindActionCreators} from 'redux'
 import {
 	creators,
-	LOGIN,
+	AUTHORIZE,
 	LOGOUT
 } from '../actions/CurrentUserActions'
 
@@ -15,18 +15,16 @@ export default class Auth extends View {
 	constructor (props) {
 		super(props)
 		this.actions = bindActionCreators(creators, store.dispatch)
-
-		if (
-			!store.getState().CurrentUser
-			|| !store.getState().CurrentUser.get('hasFetched')
-		) {
-			this.actions[LOGIN]()
-		}
 	}
 
 	render () {
 		let props = this.props
 		let actions = this.actions
+		let state = store.getState()
+
+		if (!state.CurrentUser.get('session').loggedIn) {
+			this.actions[AUTHORIZE]()
+		}
 
 		return <div>
 			<h3>Auth</h3>

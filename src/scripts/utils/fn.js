@@ -28,7 +28,7 @@ export function request(opts) {
 		}
 
 		xhr.onreadystatechange = function () {
-			if (xhr.readyState === xhr.readyState === XMLHttpRequest.DONE) {
+			if (xhr.readyState === XMLHttpRequest.DONE) {
 				if (xhr.status >= 200 && xhr.status < 400) {
 					resolve(xhr.response)
 				} else {
@@ -82,7 +82,7 @@ export function clone (obj) {
 		: Array.isArray(obj) ? Array.prototype.map.call(obj, clone)
 			: (typeof obj === 'object' ) ? (() => {
 				var retVal = {}
-				Object.keys(obj).forEach((key) => retVal[key] = obj[key])
+				Object.keys(obj).forEach((key) => retVal[key] = clone(obj[key]))
 				return retVal
 			})()
 				: obj

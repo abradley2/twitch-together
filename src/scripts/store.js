@@ -1,37 +1,51 @@
 import {compose, combineReducers, createStore, applyMiddleware} from 'redux'
 import {clone, request, assign} from './utils/fn'
+import {generate as genId} from 'shortid'
 import CurrentUser from './reducers/CurrentUser'
 
 const app = combineReducers({
 	CurrentUser: CurrentUser
 })
 
+var pendingRequests = {}
 
 function createAsyncDispatch (store, action) {
-	request(action.request)
+	return request(action.request)
 		.then(res => {
-			store.dispatch(assign(action, {
+			assign(action.request, {
 				status: 'done',
-				response: res
-			}))
+				response: JSON.parse(res)
+			})
+			return store.dispatch(action)
 		})
 		.catch(e => {
-			store.dispatch(assign(action, {
+			assign(action.request, {
 				status: 'done',
 				error: e
-			}))
+			})
+			return store.dispatch(action)
 		})
 }
 
 function handleAsync (store) {
 	return function (next) {
 		return function (action) {
-			if (action.request && action.status !== 'done'
-			) {
-				createAsyncDispatch(store, clone(action))
+			// if no request object defined on action, dont worry
+			if (typeof action.request === 'undefined') {
+				return next(action)
 			}
-			assign(action, {status: 'pending'})
-			next(action)
+
+			// if request has not been finished
+			if (action.request.status !== 'done') {
+				assign(action, {
+					requestId: `${Date.now()}-${genId()}`
+				})
+				createAsyncDispatch(store, clone(action))
+				assign(action.request, {status: 'pending'})
+				return next(action)
+			}
+
+			return next(action)
 		}
 	}
 }

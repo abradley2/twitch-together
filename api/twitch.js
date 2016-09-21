@@ -24,7 +24,7 @@ twitch.use(function* (next) {
 	yield next
 })
 
-twitch.get('/getauth', function * () {
+twitch.get('/authorize', function * () {
 	var ctx = this
 
 	this.response.type = 'application/json'
@@ -46,6 +46,22 @@ twitch.get('/getauth', function * () {
 			'&state=' + ctx.session.currentUser.sid
 		)
 	})
+})
+
+twitch.post('/getaccesstoken/:code', function* () {
+	var ctx = this
+
+	yield request = fn.request(_.extend({
+		method: 'POST',
+		url: (
+			'https://api.twitch.tv/kraken/oauth2/token' +
+			'?client_id=' + config.twitchClientId +
+			'&grant_type=authorization_code' +
+			'&redirect_uri=' + config.twitchAuthRedirectUri +
+			'&code=' + ctx.params.code +
+			'&state=' + ctx.session.currentUser.sid
+		)
+	}), baseOpts)
 })
 
 twitch.get('/games/top', function* () {

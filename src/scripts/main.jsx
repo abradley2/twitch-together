@@ -1,13 +1,20 @@
 import * as React from 'react'
 import Navigo from 'navigo'
 import {render} from 'react-dom'
+import {bindActionCreators} from 'redux'
 import store from './store'
 import router from './router'
 
 import Auth from './views/Auth'
 import Home from './views/Home'
 
+import {
+	creators,
+	GET_SESSION
+} from './actions/CurrentUserActions'
+
 var appContainer
+var actions = bindActionCreators(creators, store.dispatch)
 
 router.on({
 	'/': function () {
@@ -30,13 +37,22 @@ router.on({
 	}
 })
 
-store.dispatch({
-	type: '__START__'
-})
-
 document.addEventListener('DOMContentLoaded', function () {
+	var ready
 	appContainer = document.getElementById('app')
-	router.resolve()
+	ready = store.subscribe(function () {
+		let state = store.getState()
+		if (
+			state.CurrentUser
+			&& state.CurrentUser.get('session')
+		) {
+			let session = state.CurrentUser.get('session')
+			if (!session.loggedIn) router.navigate('/app/auth')
+			router.resolve()
+			ready()
+		}
+	})
+	actions[GET_SESSION]()
 })
 
 document.addEventListener('click', function (e) {

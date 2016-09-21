@@ -11,6 +11,11 @@ var Promise = require('bluebird')
 var app = koa()
 var config = require('./local.json')
 
+/*
+	Setup app and add middleware, default session
+	variables, app keys, etc
+*/
+
 app.keys = config.keys || ['What is funnier than 24']
 app.use(session(app))
 app.use(function* (next) {
@@ -26,6 +31,12 @@ app.use(function* (next) {
 app.use(bodyParser())
 app.use( serve(__dirname + '/public') )
 
+/*
+	Setup SPA to always deliver public/index.html
+	so the app can use pushState based routing 
+	instead of hashbang
+*/
+
 var site = new Router()
 
 var indexHtml, getIndex = getFile('public/index.html')
@@ -33,22 +44,30 @@ var indexHtml, getIndex = getFile('public/index.html')
 site.get('/app/:path*', function* () {
 	yield getIndex.then(function (res) {indexHtml = res})
 	this.response.type = 'text/html'
-	this.response.body = yield getFile('public/index.html')
+	this.response.body = indexHtml
 })
 
 app.use( site.routes() )
 
+/*
+	Api routes
+*/
 var api = new Router()
 
 api.use('/api/twitch', require('./api/twitch').routes())
+api.use('/api/currentuser', require('./api/currentuser').routes())
 
 app.use(api.routes())
+
+/*
+	Start the app on the port specified in the configuration
+*/
 
 app.listen(config.port)
 
 /*
-    Simple convenience method for getting a file and returning
-    the thunk as a co/koa compatible promise
+	Simple convenience method for getting a file and returning
+	the thunk as a co/koa compatible promise
 */
 function getFile (path) {
 	return new Promise(function (resolve, reject) {
