@@ -2,6 +2,7 @@ import * as React from 'react'
 import Navigo from 'navigo'
 import {render} from 'react-dom'
 import {bindActionCreators} from 'redux'
+import {getQueryStringParam} from './utils/fn'
 import store from './store'
 import router from './router'
 
@@ -10,6 +11,7 @@ import Home from './views/Home'
 
 import {
 	creators,
+	LOGIN,
 	GET_SESSION,
 	AUTHORIZE
 } from './actions/CurrentUserActions'
@@ -24,7 +26,7 @@ router.on({
 			appContainer
 		)
 	},
-	'/app/home': function () {
+	'/app': function () {
 		render(
 			<Home />,
 			appContainer
@@ -35,27 +37,33 @@ router.on({
 			<Auth />,
 			appContainer
 		)
+	},
+	'/app/profile': function () {
+
+	}, 
+	'/app/group': function () {
+
+	},
+	'/app/lobby': function () {
+
 	}
 })
 
 document.addEventListener('DOMContentLoaded', function () {
 	var ready
+	var code = getQueryStringParam('code')
+
 	appContainer = document.getElementById('app')
-	ready = store.subscribe(function () {
-		let state = store.getState()
-		if (
-			state.CurrentUser
-			&& state.CurrentUser.get('session')
-		) {
-			let session = state.CurrentUser.get('session')
-			if (!session.loggedIn) {
-				router.navigate('/app/auth')
-			}
-			router.resolve()
-			ready()
-		}
-	})
+
 	actions[GET_SESSION]()
+
+	if (code) {
+		window.location.search = ''
+		actions[LOGIN](code)
+	}
+
+	router.resolve()
+	
 })
 
 document.addEventListener('click', function (e) {

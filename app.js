@@ -22,7 +22,10 @@ app.use(function* (next) {
 	_.defaults(this.session, {
 		currentUser: {
 			sid: shortid.generate(),
-			loggedIn: false
+			loggedIn: false,
+			access_token: null,
+			refresh_token: null,
+			scope: null
 		}
 	})
 	yield next

@@ -17,6 +17,8 @@ export function request(opts) {
 
 		xhr.open(opts.method, opts.url, true)
 
+		xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+
 		if (opts.headers) {
 			for (let key in opts.headers) {
 				if (Object.hasOwnProperty.call(opts.headers, key)) {
@@ -35,12 +37,11 @@ export function request(opts) {
 			}
 		}
 
-		xhr.onerror = function () {
-			reject('xhr error')
-			throw new Error('xhr error')
+		if (opts.data) {
+			xhr.send(JSON.stringify(opts.data))
+		} else {
+			xhr.send()
 		}
-
-		xhr.send(opts.data)
 	})
 }
 

@@ -1,6 +1,7 @@
 import {List, Map} from 'immutable'
 import {generate as genId} from 'shortid'
 import {
+	LOGIN,
 	GET_SESSION,
 	AUTHORIZE,
 	LOGOUT
@@ -23,6 +24,12 @@ export default function (state = Map({}), action) {
 		case AUTHORIZE:
 			if (action.request.status === 'done') {
 				return state.merge({authorization: action.request.response})
+			}
+			return state
+		case LOGIN:
+			if (action.request.status === 'done') {
+				console.log('login done: ',action.request.response)
+				return state.merge({session: action.request.response})
 			}
 			return state
 		case LOGOUT:

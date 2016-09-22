@@ -34,13 +34,12 @@ export default class Auth extends View {
 			&& !isUndefined(authorization)
 		)
 
-		let code = getQueryStringParam('code')
-		console.log('code = ',code)
-
 		return (ready ? <div>
 			<h3>Auth</h3>
-			<a href={authorization.url}>Login with Twitch</a>
-			<Link href='/app/home'>Home</Link>
+			<a href={authorization.url}>
+				<img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png"/>
+			</a>
+			<Link href='/app'>Home</Link>
 		</div> : null)
 	}
 

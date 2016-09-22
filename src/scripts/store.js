@@ -18,19 +18,12 @@ function createAsyncDispatch (store, action) {
 			})
 			return store.dispatch(action)
 		})
-		.catch(e => {
-			console.error(e)
-			assign(action.request, {
-				status: 'done',
-				error: e
-			})
-			return store.dispatch(action)
-		})
 }
 
 function handleAsync (store) {
 	return function (next) {
 		return function (action) {
+			console.log('action = ',action)
 			// if no request object defined on action, dont worry
 			if (typeof action.request === 'undefined') {
 				return next(action)
