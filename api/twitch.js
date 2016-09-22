@@ -37,10 +37,8 @@ twitch.get('/authorize', function * () {
 			'&scope=' + [
 				'user_read',
 				'user_blocks_read',
-				'user_follows_edit',
 				'user_subscriptions',
 				'channel_subscriptions',
-				'channel_editor',
 				'channel_check_subscription'
 			].join('+') +
 			'&state=' + ctx.session.currentUser.sid

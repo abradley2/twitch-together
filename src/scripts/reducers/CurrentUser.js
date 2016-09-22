@@ -7,6 +7,8 @@ import {
 } from '../actions/CurrentUserActions'
 
 const initialState = Map({
+	session: null,
+	authorization: null,
 	hasFetched: false
 })
 
@@ -19,6 +21,9 @@ export default function (state = Map({}), action) {
 			}
 			return state
 		case AUTHORIZE:
+			if (action.request.status === 'done') {
+				return state.merge({authorization: action.request.response})
+			}
 			return state
 		case LOGOUT:
 			return state

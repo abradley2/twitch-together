@@ -1,6 +1,6 @@
-export const LOGIN = 'CurrentUserActions.LOGIN'
 export const AUTHORIZE = 'CurrentUserActions.AUTHORIZE'
 export const GET_SESSION = 'CurrentUserActions.GET_SESSION'
+export const LOGOUT = 'CurrentUserActions.LOGOUT'
 
 export const creators = {
 	[GET_SESSION]: function () {

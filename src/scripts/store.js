@@ -19,6 +19,7 @@ function createAsyncDispatch (store, action) {
 			return store.dispatch(action)
 		})
 		.catch(e => {
+			console.error(e)
 			assign(action.request, {
 				status: 'done',
 				error: e

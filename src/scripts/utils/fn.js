@@ -1,7 +1,5 @@
 import Promise from 'bluebird'
 
-console.log(Promise)
-
 export function prop(initialVal) {
 	var _val = initialVal
 
@@ -47,15 +45,21 @@ export function request(opts) {
 }
 
 export function getQueryStringParam (param) {
+	if (!location.search) return null
+
 	let qs = decodeURIComponent(window.location.search.substr(1))
 		.split('&')
 		.map(pair => {
+			console.log('pair = ', pair)
 			return [ pair.split('=')[0], pair.split('=')[1] ]
 		})
 		.filter(pair => {
 			return pair[0] === param
 		})
-		.shift()[1]
+		.shift()
+
+	if (qs && qs.length > 0) return qs[1]
+	else return null
 }
 
 export function assign(target) {

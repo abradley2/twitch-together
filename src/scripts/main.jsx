@@ -10,7 +10,8 @@ import Home from './views/Home'
 
 import {
 	creators,
-	GET_SESSION
+	GET_SESSION,
+	AUTHORIZE
 } from './actions/CurrentUserActions'
 
 var appContainer
@@ -47,7 +48,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			&& state.CurrentUser.get('session')
 		) {
 			let session = state.CurrentUser.get('session')
-			if (!session.loggedIn) router.navigate('/app/auth')
+			if (!session.loggedIn) {
+				router.navigate('/app/auth')
+			}
 			router.resolve()
 			ready()
 		}
