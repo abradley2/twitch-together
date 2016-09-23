@@ -9,12 +9,9 @@ var twitch = new Router()
 
 var baseUrl = 'https://api.twitch.tv/kraken'
 
-var baseOpts = {
-	method: 'GET',
-	headers: {
-		'Accept': 'application/vnd.twitchtv.v3+json',
-		'Client-ID': config.twitchClientId
-	}
+var baseHeaders = {
+	'Accept': 'application/vnd.twitchtv.v3+json',
+	'Client-ID': config.twitchClientId
 }
 
 // Permissions layer
@@ -49,7 +46,8 @@ twitch.get('/authorize', function * () {
 twitch.post('/login', function* () {
 	var ctx = this
 
-	yield request = fn.requestAsPromise(_.extend({
+	yield request = fn.requestAsPromise({
+		headers: baseHeaders,
 		method: 'POST',
 		url: (
 			'https://api.twitch.tv/kraken/oauth2/token' +
@@ -60,7 +58,7 @@ twitch.post('/login', function* () {
 			'&code=' + ctx.request.body.code +
 			'&state=' + ctx.session.currentUser.sid
 		)
-	}), baseOpts).then(res => {
+	}).then(res => {
 		_.extend(
 			ctx.session,
 			_.pick(JSON.parse(res), 'access_token', 'refresh_token', 'scope')
@@ -74,14 +72,33 @@ twitch.post('/login', function* () {
 })
 
 twitch.get('/games/top', function* () {
-	var opts = _.extend({
+	yield fn.requestAsPromise({
+		headers: baseHeaders,
 		url: baseUrl + '/games/top'
-	}, baseOpts)
-
-	yield fn.requestAsPromise(opts).then(function (data) {
+	}).then(function (data) {
 		console.log('data = ', data)
 	})
 
+})
+
+twitch.get('/channel', function* () {
+	var ctx = this
+
+	var opts = {
+		headers: _.extend({
+			Authorization: ctx.session.access_token
+		}, baseHeaders),
+		url: baseUrl + '/channel'
+	}
+
+	console.log(opts)
+
+	yield fn.requestAsPromise(opts).then(res => {
+		console.log('res = ',res)
+	})
+
+	ctx.response.type = 'application/json'
+	ctx.response.body = JSON.stringiy(res)
 })
 
 module.exports = twitch
