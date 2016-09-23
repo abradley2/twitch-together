@@ -40,7 +40,7 @@ router.on({
 	},
 	'/app/profile': function () {
 
-	}, 
+	},
 	'/app/group': function () {
 
 	},
@@ -58,18 +58,17 @@ document.addEventListener('DOMContentLoaded', function () {
 	actions[GET_SESSION]()
 
 	if (code) {
-		window.location.search = ''
+		router.navigate(window.location.pathname, {replace: true})
 		actions[LOGIN](code)
 	}
 
 	router.resolve()
-	
+
 })
 
 document.addEventListener('click', function (e) {
 	var el = findParent('A', e.target)
 	if (el && el.hasAttribute('data-link')) {
-		e.stopPropagation()
 		e.preventDefault()
 	}
 })

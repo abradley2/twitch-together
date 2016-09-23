@@ -1,6 +1,6 @@
 import Promise from 'bluebird'
 
-export function prop(initialVal) {
+export function prop (initialVal) {
 	var _val = initialVal
 
 	return function (newVal) {
