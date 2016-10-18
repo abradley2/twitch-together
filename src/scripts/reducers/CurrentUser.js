@@ -1,39 +1,84 @@
-import {List, Map} from 'immutable'
+import {List, Map, fromJS} from 'immutable'
+import {pick} from 'underscore'
 import {generate as genId} from 'shortid'
 import {
-	LOGIN,
-	GET_SESSION,
-	AUTHORIZE,
-	LOGOUT
+	GET_CURRENT_USER,
+	GET_AUTHORIZATION_URL,
+	AUTHORIZE
 } from '../actions/CurrentUserActions'
 
 const initialState = Map({
-	session: null,
-	authorization: null,
-	hasFetched: false
+	loggedIn: null,
+	authorizationCode: null,
+	authorizationUrl: null,
+	twitchId: null,
+	twitchName: null,
+	email: null,
+	groups: null,
+	belongsTo: null,
+	events: null,
+	goingTo: null
 })
 
-export default function (state = Map({}), action) {
+export default function (state = initialState, action) {
 
 	switch (action.type) {
-		case GET_SESSION:
+
+		case GET_AUTHORIZATION_URL:
 			if (action.request.status === 'done') {
-				return state.merge({session: action.request.response})
+
+				return state.merge({
+					authorizationUrl: action.response.authorizationUrl
+				})
+			} else {
+
+				return state
 			}
-			return state
+
+		case GET_CURRENT_USER:
+			if (action.request.status === 'done') {
+				let res = action.response
+
+				return state.merge( fromJS(
+					pick(res, 
+						'loggedIn', 
+						'twitchId',
+						'twitchName',
+						'email',
+						'groups',
+						'belongsTo',
+						'events',
+						'goingTo'
+					)
+				) )
+
+			} else {
+
+				return state
+			}
+
 		case AUTHORIZE:
 			if (action.request.status === 'done') {
-				return state.merge({authorization: action.request.response})
+				let res = action.response
+
+				return state.merge( fromJS(
+					pick(res, 
+						'loggedIn', 
+						'twitchId',
+						'twitchName',
+						'email',
+						'groups',
+						'belongsTo',
+						'events',
+						'goingTo'
+					)
+				) )
+
+			} else {
+
+				return state
 			}
-			return state
-		case LOGIN:
-			if (action.request.status === 'done') {
-				console.log('login done: ',action.request.response)
-				return state.merge({session: action.request.response})
-			}
-			return state
-		case LOGOUT:
-			return state
+
 		default:
 			return state
 	}

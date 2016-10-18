@@ -15,3 +15,15 @@ exports.requestAsPromise = function (opts) {
 		})
 	})
 }
+
+exports.prop = function (initialVal) {
+	var _val = initialVal
+
+	return function (newVal) {
+		if (arguments.length !== 0) {
+			_val = newVal
+		}
+
+		return _val
+	}
+}

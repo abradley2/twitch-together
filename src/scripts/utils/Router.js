@@ -1,15 +1,24 @@
 import i40 from 'i40'
 
-class Router {
+export default class Router {
 
-	constructor () {
+	constructor (routes) {
 		this.matcher = i40()
+		this.mountedAt = null
 		window.onpopstate = this.resolve.bind(this)
+		if (routes) this.on(routes)
+	}
+
+	mount (node) {
+		this.mountedAt = node
 	}
 
 	getRouteDepth (routeStr) {
-		if (routeStr === '/') return 1
-		return routeStr.replace(/\/$/, '').split('/').length
+		if (routeStr === '/') {
+			return 1
+		} else {
+			return routeStr.replace(/\/$/, '').split('/').length
+		}
 	}
 
 	compareRouteDepth (routeA, routeB) {
@@ -29,19 +38,11 @@ class Router {
 	}
 
 	navigate (url, opts = {}) {
-		if (opts.replace) {
-			history.replaceState(
-				null,
-				document.title,
-				url
-			)
-		} else {
-			history.pushState(
-				null,
-				document.title,
-				url
-			)
-		}
+		history[opts.replace ? 'replaceState' : 'pushState'](
+			null,
+			document.title,
+			url
+		)
 		this.resolve()
 	}
 
@@ -51,9 +52,7 @@ class Router {
 		)
 
 		if (resolved) {
-			resolved.fn(resolved.params)
+			resolved.fn(this.mountedAt, resolved.params)
 		}
 	}
 }
-
-export default new Router()

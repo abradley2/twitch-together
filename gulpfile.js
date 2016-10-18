@@ -8,7 +8,7 @@ var gulp = require('gulp'),
 
 gulp.task('build-scripts', function () {
 	return browserify({
-		entries: ['./src/scripts/main.jsx'],
+		entries: ['./src/scripts/main.js'],
 		extensions: ['.js', '.jsx'],
 	})
 		.transform('babelify', {
@@ -23,7 +23,7 @@ gulp.task('build-scripts', function () {
 gulp.task('watch-scripts', function () {
 	var b = watchify(
 		browserify({
-			entries: ['./src/scripts/main.jsx'],
+			entries: ['./src/scripts/main.js'],
 			extensions: ['.js', '.jsx'],
 		})
 	)

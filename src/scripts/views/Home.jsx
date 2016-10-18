@@ -9,9 +9,9 @@ export default class Home extends View {
 	}
 
 	render () {
-		return <div>
+		return (<div>
 			<h3>Home</h3>
 			<Link href='/app/auth'>Auth</Link>
-		</div>
+		</div>)
 	}
 } 

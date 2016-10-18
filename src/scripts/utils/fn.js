@@ -30,7 +30,7 @@ export function request(opts) {
 		xhr.onreadystatechange = function () {
 			if (xhr.readyState === XMLHttpRequest.DONE) {
 				if (xhr.status >= 200 && xhr.status < 400) {
-					resolve(xhr.response)
+					resolve(xhr.response ? JSON.parse(xhr.response) : null)
 				} else {
 					reject(xhr.response)
 				}
@@ -51,7 +51,6 @@ export function getQueryStringParam (param) {
 	let qs = decodeURIComponent(window.location.search.substr(1))
 		.split('&')
 		.map(pair => {
-			console.log('pair = ', pair)
 			return [ pair.split('=')[0], pair.split('=')[1] ]
 		})
 		.filter(pair => {
@@ -59,20 +58,23 @@ export function getQueryStringParam (param) {
 		})
 		.shift()
 
-	if (qs && qs.length > 0) return qs[1]
-	else return null
+	if (qs && qs.length > 0) {
+		return qs[1]
+	} else {
+		return null
+	} 
 }
 
-export function assign(target) {
+export function assign (target) {
 	if (target === undefined || target === null) {
 		throw new TypeError('Cannot convert undefined or null to object')
 	}
 
 	var output = Object(target)
-	for (var index = 1; index < arguments.length; index++) {
-		var source = arguments[index]
+	for (let index = 1; index < arguments.length; index++) {
+		let source = arguments[index]
 		if (source !== undefined && source !== null) {
-			for (var nextKey in source) {
+			for (let nextKey in source) {
 				if (source.hasOwnProperty(nextKey)) {
 					output[nextKey] = source[nextKey]
 				}

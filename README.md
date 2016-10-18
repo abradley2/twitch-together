@@ -6,9 +6,10 @@
 ```
 {
 	"twitchApplicationName": string,
-	"twitchClientId": string,
 	"twitchClientSecret": string,
-	"twitchAuthRedirectUri": string,
+	"twitchClientId": string,
+	"twitchAuthRedirectUri": "[domain]/app",
+	"mongoUri": string,
 	"port": number
 }
 ```
