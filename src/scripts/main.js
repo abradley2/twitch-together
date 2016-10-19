@@ -15,11 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	var actions = bindActionCreators(creators, store.dispatch)
 	var CurrentUser = store.getState().CurrentUser.toJS()
 
-	console.log('CurrentUser = ',CurrentUser)
-
 	router.mount( document.getElementById('app') )
 
-	actions[GET_CURRENT_USER]()
 	// if the user has been directed to this application
 	// via twitch authentication, trigger the authorize action
 	if (CurrentUser.authorizationCode) {
@@ -27,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		actions[AUTHORIZE](CurrentUser.authorizationCode)
 		//window.location.search = ''
 	} else {
+		actions[GET_CURRENT_USER]()
 		router.resolve()
 	}
 
