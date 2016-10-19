@@ -17,7 +17,7 @@ export default class Auth extends View {
 
 	constructor (props) {
 		super(props)
-		
+
 		this.actions = bindActionCreators(creators, store.dispatch)
 		this.actions[GET_AUTHORIZATION_URL]()
 	}

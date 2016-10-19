@@ -1,6 +1,8 @@
+import {defer} from 'underscore'
 import {List, Map, fromJS} from 'immutable'
 import {pick} from 'underscore'
 import {generate as genId} from 'shortid'
+import router from '../router'
 import {
 	GET_CURRENT_USER,
 	GET_AUTHORIZATION_URL,
@@ -39,9 +41,15 @@ export default function (state = initialState, action) {
 			if (action.request.status === 'done') {
 				let res = action.response
 
+				if (res.loggedIn === false && window.location.pathname !== '/app/auth') {
+					defer(function () {
+						router.navigate('/app/auth')
+					})
+				}
+
 				return state.merge( fromJS(
-					pick(res, 
-						'loggedIn', 
+					pick(res,
+						'loggedIn',
 						'twitchId',
 						'twitchName',
 						'email',
@@ -62,8 +70,8 @@ export default function (state = initialState, action) {
 				let res = action.response
 
 				return state.merge( fromJS(
-					pick(res, 
-						'loggedIn', 
+					pick(res,
+						'loggedIn',
 						'twitchId',
 						'twitchName',
 						'email',

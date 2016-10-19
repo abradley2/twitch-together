@@ -4,10 +4,8 @@ var _ = require('underscore')
 var currentuser = new Router()
 
 currentuser.get('/', function* () {
-	var ctx = this
-
 	this.response.type = 'application/json'
-	this.response.body = JSON.stringify(ctx.session)
+	this.response.body = JSON.stringify(this.session)
 })
 
 currentuser.post('/logout', function* () {

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Router from './utils/Router'
 import {render} from 'react-dom'
-
 import Auth from './views/Auth'
 import Home from './views/Home'
 
@@ -35,5 +34,7 @@ var router = new Router({
 
 	}
 })
+
+
 
 export default router

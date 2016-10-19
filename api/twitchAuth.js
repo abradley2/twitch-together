@@ -54,8 +54,9 @@ twitchAuth.get('/getAuthorizationUrl', function * () {
 // return with a code that can be exchanged for an oauth token.
 twitchAuth.post('/authorize', function* () {
 	var ctx = this
-	var authRes 
+	var authRes
 	var twitchUserRes
+	var userRes
 
 	// get the oauth token
 	yield fn.requestAsPromise({
@@ -74,7 +75,6 @@ twitchAuth.post('/authorize', function* () {
 		authRes = parse(res)
 	})
 
-
 	// use oauth token to get user info
 	yield fn.requestAsPromise({
 		url: baseUrl + '/user',
@@ -83,23 +83,26 @@ twitchAuth.post('/authorize', function* () {
 		twitchUserRes = parse(res)
 	})
 
-	console.log('authorize')
-
-	var user = {
-		twitchId: twitchUserRes._id,
-		twitchName: twitchUserRes.display_name,
-		email: twitchUserRes.email,
-		bio: twitchUserRes.bio,
-		logo: twitchUserRes.logo
-	}
-
-	yield UserModel.findOneAndUpdate({twitchId: user.twitchId}, user, {upsert: true}).exec()
-		
-	// extend the session with the current user, then return the session
-
+	yield UserModel.findOneAndUpdate(
+		{twitchId: twitchUserRes._id},
+		{
+			twitchId: twitchUserRes._id,
+			twitchName: twitchUserRes.display_name,
+			email: twitchUserRes.email,
+			logo: twitchUserRes.logo
+		},
+		{setDefaultsOnInsert: true, new: true, upsert: true}
+	)
+		.exec()
+		.then(function (user) {
+			_.extend(ctx.session,
+				parse(stringify(user)),
+				{loggedIn: true}
+			)
+		})
 
 	this.response.type = 'application/json'
-	this.response.body = '{}'
+	this.response.body = stringify(ctx.session)
 })
 
 module.exports = twitchAuth

@@ -24,20 +24,25 @@ mongoose.connect(config.mongoUri)
  */
 
 app.keys = config.keys || ['What is funnier than 24']
+
 app.use(session(app))
-app.use(function* (next) {
-	this.session = _.defaults(this.session || {}, {
-		sid: shortid.generate()
+
+app.use(function *(next) {
+	_.defaults(this.session, {
+		sid: shortid.generate(),
+		loggedIn: false
 	})
+
 	yield next
 })
+
 
 app.use(bodyParser())
 app.use( serve(__dirname + '/public') )
 
 /**
  * Setup SPA to always deliver public/index.html
- * so the app can use pushState based routing 
+ * so the app can use pushState based routing
  * instead of hashbang
  */
 var site = new Router()
@@ -52,7 +57,7 @@ site.get('/app/:path*', function* () {
 
 app.use( site.routes() )
 
-/** 
+/**
  * Api routes
  */
 var api = new Router()
@@ -80,6 +85,3 @@ function getFile (path) {
 		})
 	})
 }
-
-
-

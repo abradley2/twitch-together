@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	router.mount( document.getElementById('app') )
 
 	actions[GET_CURRENT_USER]()
-	// if the user has been directed to this application 
+	// if the user has been directed to this application
 	// via twitch authentication, trigger the authorize action
 	if (CurrentUser.authorizationCode) {
 		router.navigate(window.location.pathname, {replace: true})

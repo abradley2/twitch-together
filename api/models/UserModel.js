@@ -17,19 +17,19 @@ var UserSchema = new Schema({
 	},
 	groups: {
 		type: [ObjectId],
-		defaultValue: []
+		default: []
 	},
 	hosting: {
 		type: [ObjectId],
-		defaultValue: []
+		default: []
 	},
 	belongsTo: {
 		type: [ObjectId],
-		defaultValue: []
+		default: []
 	},
 	goingTo: {
 		type: [ObjectId],
-		defaultValue: []
+		default: []
 	}
 })
 
