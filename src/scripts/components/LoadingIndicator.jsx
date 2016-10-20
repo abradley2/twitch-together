@@ -2,13 +2,11 @@ import * as React from 'react'
 
 export default function LoadingIndicator (props) {
 	
-	return <a
-		{...props}
-		onClick={e => {
-			router.navigate(props.href)
+	return <div
+		style={{
+			textAlign: 'center'
 		}}
-		data-link='true'
 	>
-		{props.children}
-	</a>
+		<i className='fa fa-circle-o-notch fa-spin fa-5x fa-fw'></i>
+	</div>
 }

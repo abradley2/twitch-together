@@ -1,94 +1,44 @@
-import {defer} from 'underscore'
-import {List, Map, fromJS} from 'immutable'
-import {pick} from 'underscore'
-import {generate as genId} from 'shortid'
-import router from '../router'
+import { pick, defer } from 'underscore'
+import { List, Map, fromJS } from 'immutable'
+import { generate as genId } from 'shortid'
+import { setupReducer } from '../utils/fn'
 import {
-	GET_CURRENT_USER,
-	GET_AUTHORIZATION_URL,
-	AUTHORIZE
+	GET_CURRENT_USER
 } from '../actions/CurrentUserActions'
 
-const initialState = Map({
-	loggedIn: null,
-	authorizationCode: null,
-	authorizationUrl: null,
+const initialState = fromJS({
 	twitchId: null,
 	twitchName: null,
 	email: null,
-	groups: null,
-	belongsTo: null,
-	events: null,
-	goingTo: null
+	groups: [],
+	belongsTo: [],
+	events: [],
+	goingTo: []
 })
 
-export default function (state = initialState, action) {
+var CurrentUser = setupReducer(initialState)
+	.on(GET_CURRENT_USER, function (oldState, action) {
 
-	switch (action.type) {
+		if (action.request.status === 'done') {
+			let res = action.response
 
-		case GET_AUTHORIZATION_URL:
-			if (action.request.status === 'done') {
+			return oldState.merge(fromJS(
+				pick(res,
+					'twitchId',
+					'twitchName',
+					'email',
+					'groups',
+					'belongsTo',
+					'events',
+					'goingTo'
+				)
+			))
 
-				return state.merge({
-					authorizationUrl: action.response.authorizationUrl
-				})
-			} else {
+		} else {
 
-				return state
-			}
+			return oldState
+		}
+	})
+	.create()
 
-		case GET_CURRENT_USER:
-			if (action.request.status === 'done') {
-				let res = action.response
-
-				if (res.loggedIn === false && window.location.pathname !== '/app/auth') {
-					defer(function () {
-						router.navigate('/app/auth')
-					})
-				}
-
-				return state.merge( fromJS(
-					pick(res,
-						'loggedIn',
-						'twitchId',
-						'twitchName',
-						'email',
-						'groups',
-						'belongsTo',
-						'events',
-						'goingTo'
-					)
-				) )
-
-			} else {
-
-				return state
-			}
-
-		case AUTHORIZE:
-			if (action.request.status === 'done') {
-				let res = action.response
-
-				return state.merge( fromJS(
-					pick(res,
-						'loggedIn',
-						'twitchId',
-						'twitchName',
-						'email',
-						'groups',
-						'belongsTo',
-						'events',
-						'goingTo'
-					)
-				) )
-
-			} else {
-
-				return state
-			}
-
-		default:
-			return state
-	}
-
-}
+export default CurrentUser

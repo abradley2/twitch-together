@@ -25,33 +25,6 @@ var oAuthHeaders = function (access_token) {
 	}, baseHeaders())
 }
 
-// sends the user tio the twitch authorization request
-// link, asking for appropriate permissions
-twitchAuth.get('/getAuthorizationUrl', function * () {
-	var ctx = this
-
-	this.response.type = 'application/json'
-	this.response.body = JSON.stringify({
-		authorizationUrl: encodeURI(
-			'https://api.twitch.tv/kraken/oauth2/authorize' +
-			'?response_type=code' +
-			'&client_id=' + config.twitchClientId +
-			'&scope=' + [
-				'user_read',
-				'user_blocks_read',
-				'user_subscriptions',
-				'channel_read',
-				'channel_subscriptions',
-				'channel_check_subscription'
-			].join(' ') +
-			'&state=' + ctx.session.sid +
-			'&redirect_uri=' + config.twitchAuthRedirectUri
-		)
-	})
-})
-
-// after requestauthorization, if the user accepts, they will
-// return with a code that can be exchanged for an oauth token.
 twitchAuth.post('/authorize', function* () {
 	var ctx = this
 	var authRes
@@ -83,26 +56,35 @@ twitchAuth.post('/authorize', function* () {
 		twitchUserRes = parse(res)
 	})
 
+	// create or update the user with twitch info (upsert)
 	yield UserModel.findOneAndUpdate(
 		{twitchId: twitchUserRes._id},
 		{
 			twitchId: twitchUserRes._id,
 			twitchName: twitchUserRes.display_name,
 			email: twitchUserRes.email,
-			logo: twitchUserRes.logo
+			logo: twitchUserRes.logo,
+			bio: twitchUserRes.bio
 		},
 		{setDefaultsOnInsert: true, new: true, upsert: true}
 	)
 		.exec()
 		.then(function (user) {
-			_.extend(ctx.session,
-				parse(stringify(user)),
-				{loggedIn: true}
-			)
+			_.extend(ctx.session, {twitchId: user.twitchId})
 		})
 
+	// return session, which now has the twitchId included
 	this.response.type = 'application/json'
 	this.response.body = stringify(ctx.session)
+})
+
+twitchAuth.post('/logout', function* () {
+	var ctx = this
+
+	_.extend(ctx.session, {twitchId: null})
+
+	this.response.type = 'application/json'
+	this.response.body = JSON.stringify(ctx.session)
 })
 
 module.exports = twitchAuth

@@ -5,11 +5,25 @@ var ObjectId = mongoose.Schema.Types.ObjectId
 var EventSchema = new Schema({
 	creator: {
 		type: ObjectId,
-		index: true
+		required: true
+	},
+	time: {
+		type: Date
+	},
+	location: {
+		index: '2dsphere',
+		type: [Number],
+		default: [0,0]
 	},
 	name: {
 		type: String,
 		required: true
+	},
+	description: {
+		type: String
+	},
+	attending: {
+		type: [ObjectId]
 	}
 })
 

@@ -1,4 +1,6 @@
 import i40 from 'i40'
+import {createElement} from 'react'
+import {render} from 'react-dom'
 
 export default class Router {
 
@@ -52,7 +54,11 @@ export default class Router {
 		)
 
 		if (resolved) {
-			resolved.fn(this.mountedAt, resolved.params)
+			let config = resolved.fn( resolved.params )
+			render(
+				createElement( config.view, config.props || {} ),
+				document.querySelector(this.mountedAt)
+			)
 		}
 	}
 }

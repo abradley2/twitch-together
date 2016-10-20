@@ -8,6 +8,11 @@ var GroupSchema = new Schema({
 		type: ObjectId,
 		index: true
 	},
+	location: {
+		index: '2dsphere',
+		type: [Number],
+		default: [0,0]
+   },
 	name: {
 		type: String,
 		required: true

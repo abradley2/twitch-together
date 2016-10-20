@@ -1,17 +1,22 @@
 import {compose, combineReducers, createStore, applyMiddleware} from 'redux'
 import {Map} from 'immutable'
 import {getQueryStringParam} from './utils/fn'
-import {logger, handleAsync} from './utils/middlewares'
+import {logger, handleAsync, handleBatch} from './utils/middlewares'
+
 import CurrentUser from './reducers/CurrentUser'
+import TwitchAuth from './reducers/TwitchAuth'
+import Navigation from './reducers/Navigation'
 
 const app = combineReducers({
-	CurrentUser: CurrentUser
+	TwitchAuth: TwitchAuth,
+	CurrentUser: CurrentUser,
+	Navigation: Navigation
 })
 
 const store = createStore(
 	app,
 	{
-		CurrentUser: Map({
+		TwitchAuth: Map({
 			authorizationCode: getQueryStringParam('code')
 		})
 	},

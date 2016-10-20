@@ -94,3 +94,29 @@ export function clone (obj) {
 			})()
 				: obj
 }
+
+export function setupReducer (initialState, _handlers) {
+
+	var handlers = _handlers || {}
+
+	return {
+		on: function (actionType, handler) {
+			if (typeof actionType !== 'string') {
+				throw new TypeError('Must register string as actionType ')
+			}
+			handlers[actionType] = handler
+
+			return setupReducer(initialState, handlers)
+		},
+		create: function () {
+			return function (oldState = initialState, action) {
+				if (!handlers[action.type]) {
+					return oldState
+				} else {
+					return handlers[action.type](oldState, action)
+				}
+			}
+		}
+	}
+
+}

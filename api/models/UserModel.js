@@ -11,23 +11,22 @@ var UserSchema = new Schema({
 		type: String,
 		required: true
 	},
+	bio: {
+		type: String
+	},
+	logo: {
+		type: String
+	},
+	location: {
+		index: '2dsphere',
+		type: [Number],
+		default: [0,0]
+	},
 	email: {
 		type: String,
 		required: true
 	},
 	groups: {
-		type: [ObjectId],
-		default: []
-	},
-	hosting: {
-		type: [ObjectId],
-		default: []
-	},
-	belongsTo: {
-		type: [ObjectId],
-		default: []
-	},
-	goingTo: {
 		type: [ObjectId],
 		default: []
 	}

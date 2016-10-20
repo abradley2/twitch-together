@@ -28,10 +28,9 @@ app.keys = config.keys || ['What is funnier than 24']
 app.use(session(app))
 
 app.use(function *(next) {
-	_.defaults(this.session, {
-		sid: shortid.generate(),
-		loggedIn: false
-	})
+	if (!this.session) this.session = {}
+
+	if (!this.session.sid) this.session.sid = shortid.generate()
 
 	yield next
 })
@@ -39,23 +38,6 @@ app.use(function *(next) {
 
 app.use(bodyParser())
 app.use( serve(__dirname + '/public') )
-
-/**
- * Setup SPA to always deliver public/index.html
- * so the app can use pushState based routing
- * instead of hashbang
- */
-var site = new Router()
-
-var indexHtml, getIndex = getFile('public/index.html')
-
-site.get('/app/:path*', function* () {
-	yield getIndex.then(function (res) {indexHtml = res})
-	this.response.type = 'text/html'
-	this.response.body = indexHtml
-})
-
-app.use( site.routes() )
 
 /**
  * Api routes
@@ -66,6 +48,59 @@ api.use('/api/twitchAuth', require('./api/twitchAuth').routes())
 api.use('/api/currentuser', require('./api/currentuser').routes())
 
 app.use(api.routes())
+
+
+/**
+ * Setup SPA to always deliver public/index.html
+ * so the app can use pushState based routing
+ * instead of hashbang
+ */
+var site = new Router()
+
+var appHtml
+var authHtml
+var getApp = getFile('public/app.html')
+var getAuth = getFile('public/auth.html').then(function (res) {
+	authHtml = _.template(res)
+})
+
+site.get(['/', '/app/:path*'], function* () {
+	var ctx = this
+
+	if (ctx.params.path === 'logout') {
+		_.extend(ctx.session, {twitchId: null})
+	}
+
+	if (!ctx.session.twitchId) {
+
+		yield getAuth
+
+		var authUrl = encodeURI(
+			'https://api.twitch.tv/kraken/oauth2/authorize' +
+			'?response_type=code' +
+			'&client_id=' + config.twitchClientId +
+			'&scope=' + [
+				'user_read'
+			].join(' ') +
+			'&state=' + ctx.session.sid +
+			'&redirect_uri=' + config.twitchAuthRedirectUri
+		)
+
+		this.response.type = 'text/html'
+		this.response.body = authHtml({authUrl: authUrl})
+	} else {
+
+		yield getApp.then(function (res) {
+			appHtml = res
+		})
+
+		this.response.type = 'text/html'
+		this.response.body = appHtml
+	}
+	
+})
+
+app.use( site.routes() )
 
 /**
  *	Start the app on the port specified in the configuration
