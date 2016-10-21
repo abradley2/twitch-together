@@ -44,6 +44,7 @@ app.use( serve(__dirname + '/public') )
  */
 var api = new Router()
 
+api.use('/api/groups', require('./api/groups').routes())
 api.use('/api/twitchAuth', require('./api/twitchAuth').routes())
 api.use('/api/currentuser', require('./api/currentuser').routes())
 
@@ -97,7 +98,7 @@ site.get(['/', '/app/:path*'], function* () {
 		this.response.type = 'text/html'
 		this.response.body = appHtml
 	}
-	
+
 })
 
 app.use( site.routes() )

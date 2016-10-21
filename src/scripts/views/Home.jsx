@@ -9,9 +9,15 @@ import AskLocation from '../components/AskLocation'
 import LoadingIndicator from '../components/LoadingIndicator'
 
 import {
-	creators,
+	creators as currentUserActionCreators,
 	GET_CURRENT_USER
 } from '../actions/CurrentUserActions'
+
+import {
+	creators as groupActionCreators,
+	GET_GROUPS,
+	GET_USER_GROUPS
+} from '../actions/GroupActions'
 
 
 function locationIsSet (position) {
@@ -22,12 +28,14 @@ export default class Home extends View {
 	constructor (props) {
 		super(props)
 		this.actions = extend({},
-			bindActionCreators(creators, store.dispatch)
+			bindActionCreators(groupActionCreators, store.dispatch),
+			bindActionCreators(currentUserActionCreators, store.dispatch)
 		)
 	}
 
 	mountActions () {
 		this.actions[GET_CURRENT_USER]()
+		this.actions[GET_USER_GROUPS]()
 	}
 
 	render () {

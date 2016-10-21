@@ -1,6 +1,5 @@
 import { pick, defer } from 'underscore'
 import { List, Map, fromJS } from 'immutable'
-import { generate as genId } from 'shortid'
 import { setupReducer } from '../utils/fn'
 import {
 	GET_CURRENT_USER,

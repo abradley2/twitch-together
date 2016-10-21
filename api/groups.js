@@ -12,6 +12,7 @@ groups.get('/usergroups', function* () {
 	var user = fn.prop()
 	var groups = fn.prop()
 
+	console.log('get user groups: ')
 
 	yield UserModel
 		.findOne({twitchId: twitchId})
@@ -22,6 +23,20 @@ groups.get('/usergroups', function* () {
 		.find({ _id: {$in: user().groups} })
 		.exec()
 		.then(groups)
+
+	this.response.type = 'application/json'
+	this.response.body = JSON.stringify(groups() || [])
+})
+
+groups.get('/', function *() {
+	var ctx = this
+	var groups = fn.prop()
+
+	yield GroupModel
+		.find()
+		.exec()
+		.then(groups)
+
 
 	this.response.type = 'application/json'
 	this.response.body = JSON.stringify(groups() || [])
