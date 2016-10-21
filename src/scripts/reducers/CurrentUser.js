@@ -3,13 +3,15 @@ import { List, Map, fromJS } from 'immutable'
 import { generate as genId } from 'shortid'
 import { setupReducer } from '../utils/fn'
 import {
-	GET_CURRENT_USER
+	GET_CURRENT_USER,
+	SET_LOCATION,
 } from '../actions/CurrentUserActions'
 
 const initialState = fromJS({
 	twitchId: null,
 	twitchName: null,
 	email: null,
+	location: [0, 0],
 	groups: [],
 	belongsTo: [],
 	events: [],
@@ -26,6 +28,7 @@ var CurrentUser = setupReducer(initialState)
 				pick(res,
 					'twitchId',
 					'twitchName',
+					'location',
 					'email',
 					'groups',
 					'belongsTo',
@@ -34,6 +37,21 @@ var CurrentUser = setupReducer(initialState)
 				)
 			))
 
+		} else {
+
+			return oldState
+		}
+	})
+	.on(SET_LOCATION, function (oldState, action) {
+
+		if (action.request.status === 'done') {
+			let res = action.response
+
+			return oldState.set('location',
+				oldState.get('location')
+					.set(0, action.response.location[0])
+					.set(1, action.response.location[1])
+			)
 		} else {
 
 			return oldState

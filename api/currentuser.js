@@ -19,4 +19,18 @@ currentuser.get('/', function* () {
 	this.response.body = JSON.stringify( user() || {} )
 })
 
+currentuser.put('/', function* () {
+	var ctx = this
+	var twitchId = ctx.session.twitchId
+	var user = fn.prop()
+
+	yield UserModel
+		.findOneAndUpdate({twitchId: twitchId}, ctx.request.body, {new: true})
+		.exec()
+		.then(user)
+
+	this.response.type = 'application/json'
+	this.response.body = JSON.stringify( user() || {} )
+})
+
 module.exports = currentuser
